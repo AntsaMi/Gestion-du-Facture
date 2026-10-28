@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion Partage JIRAMA</title>
+    <link rel="manifest" href="manifest.json">
+    <!-- Font Awesome CDN pour les icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-ie155f4tag1fdUKd4zDmbDYR6ecaVinR/3UwEyDXPCap6q/cnE+U1A6++1gIr7VYUgvyV9PPir+7e6J9GkDpqZiQNQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <!-- Lucide Icons - moderne et accessible -->
+    <script defer src="https://unpkg.com/lucide@latest"></script>
+    <meta name="theme-color" content="#0066cc">
+    <style>
+        :root {
+            --primary: #0066cc;
+            --primary-dark: #0052a0;
+            --primary-light: #e8f0ff;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --dark: #333;
+            --darker: #222;
+            --light: #fff;
+            --light-bg: #f8f9fa;
+            --border: #ced4da;
+            --border-hover: #adb5bd;
+            --bg-soft: #f0f5ff;
+            --transition-fast: 0.15s ease;
+            --transition-normal: 0.2s ease;
+            --transition-slow: 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-soft);
+            color: var(--dark);
+            font-size: 0.9375rem; /* 15px */
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Focus reset global */
+        *:focus {
+            outline: 3px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        /* === EN-TÊTE PRINCIPAL === */
+        .app-header {
+            background: white;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-bottom: 2px solid var(--border);
+            margin: -15px -15px 30px;
+            padding: 20px 15px;
+            position: relative;
+            top: auto;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: var(--transition-fast);
+        }
+
+        .app-header.scrolled {
+            background: #f8f9fa;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        @media (max-width: 768px) {
+            .app-header {
+                margin: -10px -10px 20px;
+                padding: 15px 10px;
+            }
+            
+            .app-header .app-title {
+                font-size: 1.5rem;
+            }
+            
+            .app-header .app-subtitle {
+                display: none;
+            }
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px 15px;
+        }
+
+        /* === LOGO & TITRE === */
+        .app-header .app-logo {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 12px;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.12));
+            transition: var(--transition-fast);
+        }
+
+        .app-header .app-logo:hover {
+            transform: scale(1.1);
+        }
+
+        .app-header .app-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 4px;
+            letter-spacing: -0.3px;
+        }
+
+        .app-header .app-subtitle {
+            font-size: 0.8125rem;
+            color: #666;
+            margin-top: 2px;
+        }
+
+        /* === BOUTONS === */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 40px;
+            padding: 0 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            white-space: nowrap;
+        }
+
+        .btn:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            box-shadow: 0 4px 16px rgba(0, 102, 204, 0.35);
+        }
+
+        .btn-primary:focus-visible {
+            outline: 2px solid white;
+            outline-offset: 2px;
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+            color: #212529;
+        }
+
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* === CARDS & COMPOSANTS === */
+        .card {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 24px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: var(--transition-fast);
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .card-subtitle {
+            font-size: 0.8125rem;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        /* === FORMS === */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 14px;
+            font-size: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            background: var(--light);
+            transition: var(--transition-fast);
+            font-family: inherit;
+        }
+
+        .form-input:hover {
+            border-color: var(--border-hover);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--primary-light);
+        }
+
+        .form-input-small {
+            width: auto;
+            min-width: 60px;
+            padding: 0 10px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 576px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* === TABLEAUX === */
+        .table-appareils {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        .table-appareils thead th {
+            padding: 12px 16px;
+            background: var(--primary);
+            color: white;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            text-align: left;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .table-appareils tbody td {
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.875rem;
+            vertical-align: middle;
+        }
+
+        .table-appareils tbody tr:nth-child(even) td {
+            background: var(--light-bg);
+        }
+
+        .table-appareils tbody tr:hover td {
+            background: #ecf5ff;
+        }
+
+        /* === FICHES UTILISATEUR === */
+        .user-card {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 2px solid var(--border);
+            transition: var(--transition-fast);
+            position: relative;
+        }
+
+        .user-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 10px 10px 0 0;
+            opacity: 0;
+            transition: var(--transition-fast);
+        }
+
+        .user-card.moi {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .user-card.moi::before {
+            opacity: 1;
+        }
+
+        .user-card:hover {
+            border-color: var(--primary-dark);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        }
+
+        .user-card.moi:hover {
+            box-shadow: 0 4px 16px rgba(0, 102, 204, 0.18);
+        }
+
+        .user-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .user-card-nom {
+            font-size: 1.0625rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .user-card-id {
+            font-size: 0.75rem;
+            color: #666;
+        }
+
+        .user-card-stats {
+            display: flex;
+            gap: 16px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+            font-size: 0.75rem;
+            color: #666;
+        }
+
+        /* === BADGES === */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            font-size: 0.6875rem;
+            font-weight: 600;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-eau { background: #fff9db; color: #856404; }
+        .badge-elec { background: #e2f0ff; color: #0066cc; }
+        .badge-moi { background: #e8f0ff; color: var(--primary); }
+
+        /* === ALERTS === */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin: 16px 0;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .alert-info {
+            background: #d1e7ff;
+            color: var(--primary);
+            border: 1px solid #b4d4e8;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: var(--success);
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #e6c9a8;
+        }
+
+        /* === ACTIONS GLOBALES === */
+        .actions-globales {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 768px) {
+            .app-container {
+                padding: 15px;
+            }
+
+            .btn {
+                height: 36px;
+                padding: 0 14px;
+                font-size: 0.75rem;
+            }
+
+            .card {
+                padding: 16px;
+            }
+
+            .form-row {
+                gap: 12px;
+            }
+
+            .user-card-stats {
+                gap: 10px;
+                font-size: 0.6875rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .app-header .app-title {
+                font-size: 1.5rem;
+            }
+
+            .table-appareils th,
+            .table-appareils td {
+                padding: 8px 10px;
+                font-size: 0.75rem;
+            }
+        }
+
+        /* === IMPRIMÉ === */
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+
+            .app-header,
+            .btn,
+            .actions-globales {
+                display: none !important;
+            }
+
+            .card {
+                border: 1px solid #dee2e6;
+                box-shadow: none;
+                page-break-inside: avoid;
+            }
+
+            .user-card {
+                border: 1px solid #000;
+            }
+
+            .table-appareils th {
+                background: #f1f3f5 !important;
+                color: black !important;
+            }
+
+            .table-appareils th:last-child,
+            .table-appareils td:last-child {
+                display: none;
+            }
+
+            .fiche-utilisateur {
+                border: 1px solid #000;
+                page-break-inside: avoid;
+                margin-bottom: 20px;
+            }
+        }
+
+        /* === ANIMATIONS SUBTILES === */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp var(--transition-normal) ease-out;
+        }
+
+        /* Reduced motion preference */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0s !important;
+                transition-duration: 0s !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- En-tête application -->
+    <header class="app-header">
+        <img src="image/Emblème ATSIC pour la gestion domestique.png" alt="Logo JIRAMA" class="app-logo">
+        <div>
+            <h1 class="app-title">JIRAMA Multi-Locataires intelligent <i class="lucide lucide-tint" style="color: #0066cc; vertical-align: middle;"></i></h1>
+            <p class="app-subtitle">Gestion équitable des factures entre propriétaire et locataires</p>
+        </div>
+    </header>
+
+    <div class="app-wrapper">
+        <!-- Bandeau d'installation PWA -->
+        <div id="installBanner" class="alert alert-info" style="margin-bottom: 20px; display: none;">
+            <span style="margin-right: 8px;"><i class="lucide lucide-mobile-alt" style="color: white;"></i></span>
+            <strong>Installer l'application sur Mobile/PC</strong>
+        </div>
+
+        <!-- Formulaire des factures -->
+        <div class="card">
+            <div class="card-header">
+                <span>1. Montants réels de la Facture JIRAMA</span>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="factureElec">Électricité TTC (Ar)</label>
+                <input type="number" class="form-input" id="factureElec" value="107154.52" onchange="calculerTout()">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="factureEau">Eau TTC (Ar)</label>
+                <input type="number" class="form-input" id="factureEau" value="41294.32" onchange="calculerTout()">
+            </div>
+        </div>
+
+        <!-- Zone des fiches utilisateurs -->
+        <h2>2. Liste des Occupants et Recensement</h2>
+        <div id="zoneFiches"></div>
+
+        <!-- Actions globales -->
+        <div class="actions-globales" style="margin-top: 20px; justify-content: flex-end;">
+            <button class="btn btn-success" onclick="ajouterNouvelUtilisateur()"> <i class="lucide lucide-user-plus" style="vertical-align: middle; margin-right: 6px;"></i>Ajouter un Locataire</button>
+            <button class="btn btn-primary" onclick="window.print()"> <i class="lucide lucide-print" style="color: var(--primary); vertical-align: middle;"></i> Exporter la répartition en PDF</button>
+        </div>
+
+        <!-- Synthèse globale -->
+        <div class="card global-summary">
+            <h2>📋 Récapitulatif de la maison (Vérification)</h2>
+            <div id="verifTotaux"></div>
+        </div>
+    </div>
+
+<!-- CHARGEMENT DU MOTEUR DE CALCULS -->
+<script src="app.js"></script>
+
+<!-- Script pour le bouton d'installation PWA -->
+<script>
+// Détection du support d'installation PWA
+let deferredPrompt;
+const installBanner = document.getElementById('installBanner');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e.detail;
+    installBanner.style.display = 'block';
+});
+
+function installApplication() {
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('Utilisateur a accepté l\'installation');
+            }
+            deferredPrompt = null;
+            installBanner.style.display = 'none';
+        });
+    }
+}
+</script>
+
+</body>
+</html>
